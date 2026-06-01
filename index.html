@@ -33,8 +33,17 @@
     <link rel="canonical" href="https://okx.thealpha-secret.xyz/">
 
     <!-- ===== SECURITY HEADERS (meta fallback — GitHub Pages cannot set HTTP headers) ===== -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; base-uri 'self'; form-action 'none'; frame-ancestors 'none'">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src https://fonts.gstatic.com; img-src 'self' data: https://www.google-analytics.com; connect-src 'self' https://www.google-analytics.com; base-uri 'self'; form-action 'none'; frame-ancestors 'none'">
     <meta name="referrer" content="strict-origin-when-cross-origin">
+
+    <!-- ===== GOOGLE ANALYTICS 4 ===== -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-XXXXXXXXXX');
+    </script>
 
     <!-- ===== STRUCTURED DATA ===== -->
     <script type="application/ld+json">
@@ -426,7 +435,7 @@
                 <a href="#features">Features</a>
                 <a href="#testimonials">Reviews</a>
                 <a href="#trust">Why OKX</a>
-                <a href="https://web3.okx.com/join/HERMES" target="_blank" rel="noopener noreferrer" class="header-cta" data-utm-source="direct" data-utm-medium="header">Get Started</a>
+                <a href="https://web3.okx.com/join/HERMES" target="_blank" rel="noopener noreferrer" class="header-cta" onclick="trackConversion('header-cta')" data-utm-source="direct" data-utm-medium="header">Get Started</a>
             </nav>
             <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle navigation menu" aria-expanded="false">
                 <span></span><span></span><span></span>
@@ -436,7 +445,7 @@
             <a href="#features">Features</a>
             <a href="#testimonials">Reviews</a>
             <a href="#trust">Why OKX</a>
-            <a href="https://web3.okx.com/join/HERMES" target="_blank" rel="noopener noreferrer" class="header-cta" data-utm-source="direct" data-utm-medium="header-mobile">Get Started</a>
+            <a href="https://web3.okx.com/join/HERMES" target="_blank" rel="noopener noreferrer" class="header-cta" onclick="trackConversion('mobile-cta')" data-utm-source="direct" data-utm-medium="header-mobile">Get Started</a>
         </nav>
     </header>
     <div class="mobile-nav-backdrop" id="mobileBackdrop" aria-hidden="true"></div>
@@ -626,7 +635,7 @@
             <div class="footer-inner">
                 <p>&copy; 2026 The Alpha Secret. Independent OKX referral partner.</p>
                 <div class="footer-links">
-                    <a href="https://web3.okx.com/join/HERMES" target="_blank" rel="noopener noreferrer">OKX Official</a>
+                    <a href="https://web3.okx.com/join/HERMES" target="_blank" rel="noopener noreferrer" onclick="trackConversion('footer-okx')">OKX Official</a>
                     <a href="/privacy">Privacy</a>
                     <a href="/terms">Terms</a>
                 </div>
@@ -665,7 +674,7 @@
     // ====================================================================
     // 1. CONVERSION TRACKING
     //    Privacy-friendly approach: self-hosted 1x1 image pixel + localStorage
-    //    For production, replace PIXEL_ENDPOINT with your own analytics endpoint
+    //    Also sends events to GA4 for real analytics collection
     // ====================================================================
     var PIXEL_ENDPOINT = '/track/pixel.gif'; // Self-hosted 1x1 transparent GIF
     var UTM_SOURCE = (new URLSearchParams(window.location.search)).get('utm_source') || 'direct';
@@ -675,17 +684,22 @@
     var SESSION_ID = 's_' + Date.now() + '_' + Math.random().toString(36).substr(2,9);
 
     // UTM enrichment: append UTM params to all OKX referral links on the page
+    // Uses data-utm-source/medium/content attributes for per-link campaign tracking,
+    // falling back to page-level UTM params from the URL
     function enrichLinks() {
         var links = document.querySelectorAll('a[href*="web3.okx.com/join/HERMES"]');
-        var utmString = '?utm_source=' + encodeURIComponent(UTM_SOURCE) +
-                        '&utm_medium=' + encodeURIComponent(UTM_MEDIUM) +
-                        '&utm_campaign=' + encodeURIComponent(UTM_CAMPAIGN) +
-                        (UTM_CONTENT ? '&utm_content=' + encodeURIComponent(UTM_CONTENT) : '');
         links.forEach(function(link) {
             // Avoid duplicate params
-            if (link.href.indexOf('?') === -1 && link.href.indexOf('utm_source') === -1) {
-                link.href += utmString;
-            }
+            if (link.href.indexOf('?') !== -1 || link.href.indexOf('utm_source') !== -1) return;
+            var src = link.getAttribute('data-utm-source') || UTM_SOURCE;
+            var med = link.getAttribute('data-utm-medium') || UTM_MEDIUM;
+            var camp = link.getAttribute('data-utm-campaign') || UTM_CAMPAIGN;
+            var cont = link.getAttribute('data-utm-content') || UTM_CONTENT;
+            var utmString = '?utm_source=' + encodeURIComponent(src) +
+                            '&utm_medium=' + encodeURIComponent(med) +
+                            '&utm_campaign=' + encodeURIComponent(camp) +
+                            (cont ? '&utm_content=' + encodeURIComponent(cont) : '');
+            link.href += utmString;
         });
     }
 
@@ -700,7 +714,20 @@
                   '&ts=' + Date.now() +
                   '&detail=' + encodeURIComponent(detail || '') +
                   '&r=' + Math.random();
-        // Browser will fire the GET request; 1x1 pixel response is invisible
+        // Also send to GA4 if available
+        try {
+            if (typeof gtag === 'function') {
+                gtag('event', eventType, {
+                    'event_category': 'OKX Landing',
+                    'event_label': detail || eventType,
+                    'utm_source': UTM_SOURCE,
+                    'utm_medium': UTM_MEDIUM,
+                    'utm_campaign': UTM_CAMPAIGN,
+                    'session_id': SESSION_ID,
+                    'send_to': 'G-XXXXXXXXXX'
+                });
+            }
+        } catch(e) {}
     }
 
     // Track page view
@@ -881,7 +908,7 @@
 
     <!-- ===== NOSCRIPT 1x1 PIXEL FALLBACK ===== -->
     <noscript>
-        <img src="/track/pixel.gif?type=pageview&source=direct&medium=noscript&campaign=hermes-referral&ts=__TIMESTAMP__"
+        <img src="/track/pixel.gif?type=pageview&source=direct&medium=noscript&campaign=hermes-referral"
              style="position:absolute;left:-9999px" alt="" aria-hidden="true"/>
     </noscript>
 
