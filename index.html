@@ -32,6 +32,10 @@
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://okx.thealpha-secret.xyz/">
 
+    <!-- ===== SECURITY HEADERS (meta fallback — GitHub Pages cannot set HTTP headers) ===== -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; base-uri 'self'; form-action 'none'; frame-ancestors 'none'">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+
     <!-- ===== STRUCTURED DATA ===== -->
     <script type="application/ld+json">
     {
@@ -422,7 +426,7 @@
                 <a href="#features">Features</a>
                 <a href="#testimonials">Reviews</a>
                 <a href="#trust">Why OKX</a>
-                <a href="https://web3.okx.com/join/HERMES" target="_blank" rel="noopener" class="header-cta" data-utm-source="direct" data-utm-medium="header">Get Started</a>
+                <a href="https://web3.okx.com/join/HERMES" target="_blank" rel="noopener noreferrer" class="header-cta" data-utm-source="direct" data-utm-medium="header">Get Started</a>
             </nav>
             <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle navigation menu" aria-expanded="false">
                 <span></span><span></span><span></span>
@@ -432,7 +436,7 @@
             <a href="#features">Features</a>
             <a href="#testimonials">Reviews</a>
             <a href="#trust">Why OKX</a>
-            <a href="https://web3.okx.com/join/HERMES" target="_blank" rel="noopener" class="header-cta" data-utm-source="direct" data-utm-medium="header-mobile">Get Started</a>
+            <a href="https://web3.okx.com/join/HERMES" target="_blank" rel="noopener noreferrer" class="header-cta" data-utm-source="direct" data-utm-medium="header-mobile">Get Started</a>
         </nav>
     </header>
     <div class="mobile-nav-backdrop" id="mobileBackdrop" aria-hidden="true"></div>
@@ -449,7 +453,7 @@
                     <h1>Trade, Earn &amp; Explore <span class="highlight">Web3</span> with OKX</h1>
                     <p>Join 50M+ users on the most innovative crypto exchange. Spot &amp; futures trading, self-custodial Web3 wallet, DEX aggregator, Earn products, and NFT marketplace — all in one platform.</p>
                     <div class="hero-cta-group">
-                        <a href="https://web3.okx.com/join/HERMES" target="_blank" rel="noopener" class="btn-primary glow" onclick="trackConversion('hero-cta')" data-utm-source="direct" data-utm-medium="hero">
+                        <a href="https://web3.okx.com/join/HERMES" target="_blank" rel="noopener noreferrer" class="btn-primary glow" onclick="trackConversion('hero-cta')" data-utm-source="direct" data-utm-medium="hero">
                             🚀 Claim Your Exclusive Access
                         </a>
                         <a href="#features" class="btn-secondary">Explore Features →</a>
@@ -606,7 +610,7 @@
             <div class="cta-box">
                 <h2>Ready to <span class="highlight">Trade, Earn, and Build</span> in Web3?</h2>
                 <p>Join 50M+ users on the fastest-growing crypto platform. Sign up through the exclusive HERMES referral link and unlock your benefits today.</p>
-                <a href="https://web3.okx.com/join/HERMES" target="_blank" rel="noopener" class="btn-primary glow" onclick="trackConversion('cta-bottom')" data-utm-source="direct" data-utm-medium="cta-bottom">
+                <a href="https://web3.okx.com/join/HERMES" target="_blank" rel="noopener noreferrer" class="btn-primary glow" onclick="trackConversion('cta-bottom')" data-utm-source="direct" data-utm-medium="cta-bottom">
                     🚀 Join OKX via HERMES Referral
                 </a>
                 <p class="disclaimer">* Terms &amp; conditions apply. Benefits vary by region. Crypto products are unregulated and can be risky. No guarantee of returns. DYOR.</p>
@@ -622,7 +626,7 @@
             <div class="footer-inner">
                 <p>&copy; 2026 The Alpha Secret. Independent OKX referral partner.</p>
                 <div class="footer-links">
-                    <a href="https://web3.okx.com/join/HERMES" target="_blank" rel="noopener">OKX Official</a>
+                    <a href="https://web3.okx.com/join/HERMES" target="_blank" rel="noopener noreferrer">OKX Official</a>
                     <a href="/privacy">Privacy</a>
                     <a href="/terms">Terms</a>
                 </div>
@@ -637,7 +641,7 @@
             <div style="font-size:48px;margin-bottom:16px">⚡</div>
             <h3>Don't Miss Out on Exclusive Benefits</h3>
             <p>The HERMES referral gives you access to special trading fee discounts, staking bonuses, and airdrop eligibility that aren't available through standard signup.</p>
-            <a href="https://web3.okx.com/join/HERMES" target="_blank" rel="noopener" class="btn-primary glow" onclick="trackConversion('exit-intent');document.getElementById('exitPopup').classList.remove('active');" data-utm-source="exit-intent" data-utm-medium="popup">
+            <a href="https://web3.okx.com/join/HERMES" target="_blank" rel="noopener noreferrer" class="btn-primary glow" onclick="trackConversion('exit-intent');document.getElementById('exitPopup').classList.remove('active');" data-utm-source="exit-intent" data-utm-medium="popup">
                 🚀 Claim Your Access Now
             </a>
             <a href="#" class="small-link" id="exitPopupDismiss">No thanks, I'll explore on my own</a>
