@@ -1,0 +1,82 @@
+<?php
+/**
+ * Tracking Pixel Endpoint — 1x1 Transparent GIF
+ *
+ * Place this file at /track/pixel.gif (or configure your web server to
+ * route /track/* to this script) on your web server.
+ *
+ * It returns a 1x1 transparent GIF and logs tracking events to a JSON file.
+ *
+ * Requirements:
+ *   - PHP 7.4+
+ *   - Write permission for the 'logs' directory (auto-created)
+ *
+ * Usage:
+ *   <img src="/track/pixel.gif?type=pageview&source=twitter&medium=social&campaign=hermes-referral&ts=1234567890">
+ */
+
+// === CONFIGURATION ===
+// Directory to store tracking logs
+$logDir = __DIR__ . '/logs';
+$logFile = $logDir . '/tracking-' . date('Y-m-d') . '.log';
+// Rate limit: minimum seconds between requests from same IP
+$rateLimitSec = 1;
+
+// === SET UP LOGGING ===
+if (!is_dir($logDir)) {
+    @mkdir($logDir, 0755, true);
+}
+
+// === RATE LIMITING (basic memory-based) ===
+$ip = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
+$rateFile = $logDir . '/ratelimit_' . md5($ip) . '.tmp';
+if (file_exists($rateFile)) {
+    $lastReq = (int) file_get_contents($rateFile);
+    if (time() - $lastReq < $rateLimitSec) {
+        // Still serve the pixel, but don't log to avoid flooding
+        servePixel();
+        exit;
+    }
+}
+file_put_contents($rateFile, (string) time());
+
+// === PARSE EVENT DATA ===
+$eventData = [
+    'timestamp'    => date('c'),
+    'ip'           => $ip,
+    'user_agent'   => $_SERVER['HTTP_USER_AGENT'] ?? '',
+    'referer'      => $_SERVER['HTTP_REFERER'] ?? '',
+    'type'         => $_GET['type'] ?? 'unknown',
+    'source'       => $_GET['source'] ?? 'direct',
+    'medium'       => $_GET['medium'] ?? 'none',
+    'campaign'     => $_GET['campaign'] ?? '',
+    'content'      => $_GET['content'] ?? '',
+    'session'      => $_GET['session'] ?? '',
+    'detail'       => $_GET['detail'] ?? '',
+    'ts'           => $_GET['ts'] ?? time(),
+];
+
+// === LOG EVENT (JSONL format — one JSON object per line) ===
+$logLine = json_encode($eventData) . "\n";
+@file_put_contents($logFile, $logLine, FILE_APPEND | LOCK_EX);
+
+// === SERVE 1x1 TRANSPARENT GIF ===
+servePixel();
+
+/**
+ * Outputs a 1x1 transparent pixel GIF with proper caching headers.
+ */
+function servePixel() {
+    // 1x1 transparent GIF (43 bytes)
+    $pixel = base64_decode('R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7');
+
+    // Cache for 1 hour at the browser, 5 minutes at CDN
+    header('Content-Type: image/gif');
+    header('Content-Length: ' . strlen($pixel));
+    header('Cache-Control: public, max-age=3600, s-maxage=300');
+    header('Expires: ' . gmdate('D, d M Y H:i:s', time() + 3600) . ' GMT');
+    header('Pragma: no-cache'); // Overridden by Cache-Control in HTTP/1.1
+
+    echo $pixel;
+    exit;
+}
