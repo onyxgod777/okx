@@ -109,6 +109,9 @@
         .header-cta:hover{background:var(--accent-hover);transform:translateY(-1px);box-shadow:0 4px 20px var(--accent-glow)}
         .mobile-toggle{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:4px;background:none;border:none}
         .mobile-toggle span{width:24px;height:2px;background:var(--text-primary);border-radius:2px;transition:all .3s}
+        .mobile-toggle.active span:nth-child(1){transform:rotate(45deg) translate(5px,5px)}
+        .mobile-toggle.active span:nth-child(2){opacity:0}
+        .mobile-toggle.active span:nth-child(3){transform:rotate(-45deg) translate(5px,-5px)}
         .mobile-nav{
             display:none;position:fixed;top:var(--header-h);left:0;right:0;bottom:0;
             background:rgba(10,11,14,.98);backdrop-filter:blur(20px);
@@ -326,6 +329,8 @@
         @media(max-width:768px){
             .nav-links{display:none}
             .mobile-toggle{display:flex}
+            .mobile-nav.open{display:flex;animation:fadeIn .25s ease}
+            @keyframes fadeIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
             .hero{padding:120px 0 60px}
             .hero h1{font-size:36px}
             .hero p{font-size:16px}
@@ -347,9 +352,13 @@
         }
         @media(max-width:480px){
             .hero h1{font-size:28px}
+            .header-cta{display:none}
+            .mobile-nav .header-cta{display:inline-flex}
+            .cta-box{padding:40px 24px}
+            .cta-box h2{font-size:28px}
+            .footer-links{flex-direction:column;gap:12px}
             .hero-cta-group{flex-direction:column;width:100%}
             .hero-cta-group .btn-primary,.hero-cta-group .btn-secondary{width:100%;justify-content:center}
-            .header-cta{display:none}
         }
     </style>
 </head>
@@ -776,11 +785,23 @@
         var nav = document.getElementById('mobileNav');
         toggle.addEventListener('click', function() {
             nav.classList.toggle('open');
+            toggle.classList.toggle('active');
+            document.body.style.overflow = nav.classList.contains('open') ? 'hidden' : '';
         });
         nav.querySelectorAll('a').forEach(function(link) {
             link.addEventListener('click', function() {
                 nav.classList.remove('open');
+                toggle.classList.remove('active');
+                document.body.style.overflow = '';
             });
+        });
+        // Close on click outside
+        document.addEventListener('click', function(e) {
+            if (nav.classList.contains('open') && !nav.contains(e.target) && !toggle.contains(e.target)) {
+                nav.classList.remove('open');
+                toggle.classList.remove('active');
+                document.body.style.overflow = '';
+            }
         });
     })();
 
