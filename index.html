@@ -864,18 +864,8 @@
     enrichLinks();
 
     // ====================================================================
-    // 7. A/B TESTING INFRASTRUCTURE (Google Optimize-compatible)
-    //    Google Optimize snippet — uncomment and add your container ID:
+    // 7. A/B TESTING — Simple query-param-based variant system
     // ====================================================================
-    // (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-    // (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-    // m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-    // })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-    // ga('create', 'UA-XXXXXXXXX-X', 'auto');
-    // ga('require', 'GTM-XXXXXXX'); // Google Optimize container
-    // ga('send', 'pageview');
-
-    // Alternative: simple A/B test via cookie-based bucketing (no external dependency)
     // To use, set TEST_VARIANT to 'a' or 'b' via query param: ?test=b
     (function() {
         var testParam = (new URLSearchParams(window.location.search)).get('test');
@@ -886,7 +876,7 @@
         }
     })();
 
-    console.log('[OKX Landing] Tracking initialized. UTM source:', UTM_SOURCE, '| Medium:', UTM_MEDIUM);
+    // Production debug removed
     </script>
 
     <!-- ===== NOSCRIPT 1x1 PIXEL FALLBACK ===== -->
